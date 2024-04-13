@@ -1,0 +1,238 @@
+{
+	"name": "pl_race_result_round_wise_child",
+	"properties": {
+		"activities": [
+			{
+				"name": "Web_1",
+				"description": "this acivity for get data from API",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "GET",
+					"url": {
+						"value": "@concat('http://ergast.com/api/f1/',pipeline().parameters.season_value_param,'.json')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ForEach_season",
+				"description": "this acivity iterate through rounds",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Web_1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Web_1').output.MRData.RaceTable.Races",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "act_Web2_round_wise_race_result",
+							"description": "this acivity will data from API",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": {
+									"value": "@concat('http://ergast.com/api/f1/',pipeline().parameters.season_value_param,'/',item().round,'/','results.json')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "act_Set_variable_round_wise_result",
+							"description": "this acivity will write rasie result data  to string type variable",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "act_Web2_round_wise_race_result",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "race_result",
+								"value": {
+									"value": "@{activity('act_Web2_round_wise_race_result').output.MRData.RaceTable.Races}",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "act_Set_variable_season_value",
+							"description": "this acivity will write season value in one variable",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "file_name_season",
+								"value": {
+									"value": "@pipeline().parameters.season_value_param",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "act_copy_data_round_wise",
+							"description": "this acivity will copy data from APL to adls in json format ",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "act_Set_variable_season_value",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								},
+								{
+									"activity": "act_Set_variable_round_wise_result",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"additionalColumns": [
+										{
+											"name": "my_column",
+											"value": {
+												"value": "@variables('race_result')",
+												"type": "Expression"
+											}
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"name": "my_column",
+												"type": "String"
+											},
+											"sink": {
+												"type": "String",
+												"physicalType": "String",
+												"ordinal": 1
+											}
+										}
+									],
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_source_data",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_sink_season_round_wise_data",
+									"type": "DatasetReference",
+									"parameters": {
+										"year_name": {
+											"value": "@variables('file_name_season')",
+											"type": "Expression"
+										},
+										"round": {
+											"value": "@item().round",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"season_value_param": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"race_result": {
+				"type": "String"
+			},
+			"file_name_season": {
+				"type": "String"
+			},
+			"season_data_only": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2024-04-11T14:37:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

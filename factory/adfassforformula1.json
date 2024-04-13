@@ -1,0 +1,9 @@
+{
+	"name": "adfassforformula1",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "a1ee2c65-4fa8-4957-a1dc-17248e0485cb",
+		"tenantId": "e32c8a79-2ded-4478-8280-d1f73f793054"
+	}
+}
