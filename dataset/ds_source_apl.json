@@ -1,0 +1,23 @@
+{
+	"name": "ds_source_apl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_source_apl",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ds_file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat(concat(dataset().ds_file_name,'.json'),'?limit=10000')",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
