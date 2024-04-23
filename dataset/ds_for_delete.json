@@ -1,0 +1,26 @@
+{
+	"name": "ds_for_delete",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_for_del",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"delfile": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().delfile",
+					"type": "Expression"
+				},
+				"fileSystem": "bronze"
+			}
+		}
+	}
+}
