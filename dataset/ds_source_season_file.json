@@ -1,0 +1,66 @@
+{
+	"name": "ds_source_season_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_sink_adlsgen2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "seasons.json",
+				"folderPath": "bronzeseasons/2024-04-23",
+				"fileSystem": "sample"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"MRData": {
+					"type": "object",
+					"properties": {
+						"xmlns": {
+							"type": "string"
+						},
+						"series": {
+							"type": "string"
+						},
+						"url": {
+							"type": "string"
+						},
+						"limit": {
+							"type": "string"
+						},
+						"offset": {
+							"type": "string"
+						},
+						"total": {
+							"type": "string"
+						},
+						"SeasonTable": {
+							"type": "object",
+							"properties": {
+								"Seasons": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"season": {
+												"type": "string"
+											},
+											"url": {
+												"type": "string"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

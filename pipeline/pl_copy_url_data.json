@@ -38,29 +38,13 @@
 				"inputs": [
 					{
 						"referenceName": "ds_source_apl",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_file_name": {
-								"value": "@pipeline().parameters.parameter_file_name",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "ds_sink_adlsgen2",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_file_name": {
-								"value": "@concat(pipeline().parameters.parameter_file_name,'.json')",
-								"type": "Expression"
-							},
-							"ds_dict_path": {
-								"value": "@concat('bronze',pipeline().parameters.parameter_file_name,'/',formatDateTime(utcnow(),'yyyy-MM-dd'))",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			}
@@ -68,6 +52,14 @@
 		"parameters": {
 			"parameter_file_name": {
 				"type": "string"
+			}
+		},
+		"variables": {
+			"yr": {
+				"type": "String"
+			},
+			"url": {
+				"type": "String"
 			}
 		},
 		"annotations": []

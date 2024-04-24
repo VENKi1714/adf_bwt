@@ -1,0 +1,29 @@
+{
+	"name": "ds_source_postgres",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_PostgreSql1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [
+			{
+				"name": "year",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "url",
+				"type": "character varying",
+				"precision": 0,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "public",
+			"table": "season"
+		}
+	}
+}
