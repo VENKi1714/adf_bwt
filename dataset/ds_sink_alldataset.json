@@ -1,0 +1,26 @@
+{
+	"name": "ds_sink_alldataset",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "HttpServer1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"dataset_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "@concat(dataset().dataset_name,'.json?limit=100000')",
+					"type": "Expression"
+				}
+			}
+		},
+		"schema": {}
+	}
+}

@@ -5,16 +5,27 @@
 			"referenceName": "ls_sink_adlsgen2",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"dataset_name": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"type": "Json",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@concat(item().season,'.json')",
+					"value": "@concat(dataset().file_name,'.json')",
 					"type": "Expression"
 				},
-				"folderPath": "bronzeraces",
+				"folderPath": {
+					"value": "@concat('bronze', dataset().dataset_name, '/', utcnow('yyyy_MM-dd'))",
+					"type": "Expression"
+				},
 				"fileSystem": "sample"
 			}
 		},

@@ -1,0 +1,94 @@
+{
+	"name": "pl_child",
+	"properties": {
+		"activities": [
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@pipeline().parameters.array_list",
+						"type": "Expression"
+					},
+					"batchCount": 25,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "HttpReadSettings",
+										"requestMethod": "GET"
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_sink_alldataset",
+									"type": "DatasetReference",
+									"parameters": {
+										"dataset_name": {
+											"value": "@concat(item().season,'/',item().round,'/',pipeline().parameters.dataset_source)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_sink_adlsgen2",
+									"type": "DatasetReference",
+									"parameters": {
+										"dataset_name": {
+											"value": "@pipeline().parameters.dataset_source",
+											"type": "Expression"
+										},
+										"file_name": {
+											"value": "@concat(item().season, '_', item().round, '_', pipeline().parameters.dataset_source)",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"array_list": {
+				"type": "Array"
+			},
+			"dataset_source": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
